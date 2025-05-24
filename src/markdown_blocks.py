@@ -39,3 +39,39 @@ def block_to_block_type(block):
             i += 1
         return BlockType.ORDERED_LIST
     return BlockType.PARAGRAPH
+
+
+def markdown_to_html_node(markdown):
+    html = "<div>"
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        block_type = block_to_block_type(block)
+
+
+def text_to_children(text):
+
+
+
+
+    for block in blocks:
+        block_type = block_to_block_type(block)
+        for line in block:
+            pass
+            
+
+def get_block_tag(block_type):
+    match block_type:
+        case BlockType.PARAGRAPH:
+            return "p"
+        case BlockType.QUOTE:
+            return "blockquote"
+        case BlockType.UNORDERED_LIST:
+            return "ul"
+        case BlockType.ORDERED_LIST:
+            return "ol"
+        case BlockType.CODE:
+            return "code"
+        case BlockType.HEADING:
+            return "h"
+        case _:
+            raise ValueError("unrecognized block type")
