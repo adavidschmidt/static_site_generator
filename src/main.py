@@ -1,15 +1,13 @@
 from textnode import TextNode, TextType
-from copy_static import get_path_files, get_static_files, copy_files, make_public
+from copy_static import copy_files_recursive, make_public
 import os
+from page_generator import generate_page_recursive
+import sys
 
 def main():
-	make_public()
-	if os.path.exists("static/"):
-		path_files = get_path_files("static/")
-	else:
-		raise Exception("static directory does not exist")
-	static_files = get_static_files(path_files, "static")
-	copy_files(static_files, "public")
- 
- 
+    basepath = sys.argv[0]
+    make_public()
+    copy_files_recursive("static", "public")
+    generate_page_recursive("content", "template.html", basepath)
+
 main()

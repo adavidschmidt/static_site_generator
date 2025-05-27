@@ -7,25 +7,14 @@ def make_public():
 		shutil.rmtree("public")
 	os.mkdir("public")
 
-def get_path_files(path):
-	return os.listdir(path)
-
-def get_static_files(path_files, current_path):
-	file_paths = []
-	for item in path_files:
-		item_path = os.path.join(current_path, item)
-		if os.path.isfile(item_path):
-			file_paths.append(item_path)
-		else:
-			file_paths.extend(get_static_files(get_path_files(item_path), item_path))
-	return file_paths
-		
-def copy_files(files, target):
-    for item in files:
-        target_path = os.path.join(target, item.removeprefix('static/'))
-        dir_names = os.path.dirname(target_path)
-        if os.path.exists(dir_names):
-            shutil.copy(item, target_path)
+def copy_files_recursive(source_path, destination_path):
+    if not os.path.exists(destination_path):
+        os.mkdir(destination_path)
+    
+    for filename in os.listdir(source_path):
+        from_path = os.path.join(source_path, filename)
+        to_path = os.path.join(destination_path, filename)
+        if os.path.isfile(from_path):
+            shutil.copy(from_path, to_path)
         else:
-            os.makedirs(dir_names)
-            shutil.copy(item, target_path)
+            copy_files_recursive(from_path, to_path)

@@ -23,9 +23,9 @@ def block_to_block_type(block):
         return BlockType.HEADING
     if len(lines) > 1 and lines[0].startswith("```") and lines[-1].startswith("```"):
         return BlockType.CODE
-    if block.startswith("> "):
+    if block.startswith(">"):
         for line in lines:
-            if not line.startswith("> "):
+            if not line.startswith(">"):
                 return BlockType.PARAGRAPH
         return BlockType.QUOTE
     if block.startswith("- "):
@@ -71,49 +71,55 @@ def markdown_to_html_node(markdown):
             block_children.append(ParentNode(f"{get_block_tag(block_type)}{i}", children))
             continue
         
-        children = text_to_children(text)
-        block_children.append(ParentNode(get_block_tag(block_type), children))
+        if block_type == BlockType.QUOTE:
+            children = text_to_children(text)
+            block_children.append(ParentNode(get_block_tag(block_type), children))
+            continue
+        
+        if block_type == BlockType.PARAGRAPH:
+            children = text_to_children(text)
+            block_children.append(ParentNode(get_block_tag(block_type), children))
+            continue
         
     return ParentNode("div", block_children)
 
 def text_to_children(text):
     children = []
     text_nodes = text_to_textnodes(text)
-    nodes = []
     for node in text_nodes:
-        nodes.append(text_node_to_html_node(node))
-    children.extend(nodes)
+        children.append(text_node_to_html_node(node))
     return children
 
 def get_block_text(block, block_type):
     match block_type:
         case BlockType.PARAGRAPH:
-            block_text = []
-            for line in block.split("\n"):
-                block_text.append(line)
-            return " ".join(block_text)
+            lines = block.split("\n")
+            paragraph = " ".join(lines)
+            return paragraph
         case BlockType.QUOTE:
             block_text = []
-            for line in block:
-                line_split = line.split("> ")
-                block_text.appen(line_split[1])
+            for line in block.split("\n"):
+                if not line.startswith(">"):
+                    raise ValueError("invalid quote block")
+                block_text.append(line.lstrip(">").strip())
             return " ".join(block_text)
         case BlockType.UNORDERED_LIST:
             block_text = []
-            for line in block:
-                line_split = line.split("- ")
-                block_text.append(line_split)
+            items = block.split("\n")
+            for item in items:
+                text = item[2:]
+                block_text.append(text)
             return block_text
         case BlockType.ORDERED_LIST:
             block_text = []
-            for line in block:
-                line_split = re.split(r"?<=\d\. ", line)
-                block_text.append(line_split)
+            items = block.split("\n")
+            for item in items:
+                text = item[3:]
+                block_text.append(text)
             return block_text
         case BlockType.HEADING:
             block_text = block.split(" ", 1)
-            block_text = block_text[1].split("\n")
-            return " ".join(block_text)
+            return block_text
         case BlockType.CODE:
             block_text = block.split("```")
             return block_text[1].lstrip("\n")
