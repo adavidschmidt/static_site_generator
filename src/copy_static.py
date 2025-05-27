@@ -2,10 +2,10 @@ import os
 import shutil
 
 
-def make_public():
-	if os.path.exists("public"):
-		shutil.rmtree("public")
-	os.mkdir("public")
+def make_public(dest_target):
+	if os.path.exists(dest_target):
+		shutil.rmtree(dest_target)
+	os.mkdir(dest_target)
 
 def copy_files_recursive(source_path, destination_path):
     if not os.path.exists(destination_path):
