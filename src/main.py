@@ -4,13 +4,13 @@ import os
 from page_generator import generate_page_recursive
 import sys
 
-content_path = "content"
-target_path = "docs"
-static_path = "static"
+content_path = "content/"
+target_path = "docs/"
+static_path = "static/"
 template_path = "template.html"
 
 def main():
-    basepath = sys.argv[0]
+    basepath = sys.argv[1] if len(sys.argv) > 1 else "/"
     make_public(target_path)
     copy_files_recursive(static_path, target_path)
     generate_page_recursive(content_path, template_path, target_path, basepath)
